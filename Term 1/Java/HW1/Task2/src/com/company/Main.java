@@ -4,39 +4,36 @@ import java.awt.*;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        try (Scanner scanner = new Scanner(System.in)) {
+            int n = scanner.nextInt();
 
-        int n = scanner.nextInt();
-
-        if (n == 0) {
-            System.out.println("0");
-        }
-
-        Point[] points = inputPoints(scanner, n);
-
-        scanner.close();
-
-        double square = 0.0;
-
-        for (int i = 0; i < n; i++) {
-            int iPlus1;
-            if ((i + 1) == n) {
-                iPlus1 = 0;
-            } else {
-                iPlus1 = i + 1;
+            if (n == 0) {
+                System.out.println("0");
             }
 
-            square += (points[i].x + points[iPlus1].x) * (points[i].y - points[iPlus1].y);
+            Point[] points = inputPoints(scanner, n);
+
+            double square = 0.0;
+
+            for (int i = 0; i < n; i++) {
+                int iPlus1;
+                if ((i + 1) == n) {
+                    iPlus1 = 0;
+                } else {
+                    iPlus1 = i + 1;
+                }
+
+                square += (points[i].x + points[iPlus1].x) * (points[i].y - points[iPlus1].y);
+            }
+
+            square = Math.abs(square) / 2;
+
+            System.out.println(square);
         }
-
-        square = Math.abs(square) / 2;
-
-        System.out.println(square);
     }
 
-    public static Point[] inputPoints(Scanner scanner, int n) {
+    private static Point[] inputPoints(Scanner scanner, int n) {
         Point[] points = new Point[n];
 
         for (int i = 0; i < n; i++) {
@@ -46,7 +43,7 @@ public class Main {
         return points;
     }
 
-    public static Point inputPoint(Scanner scanner) {
+    private static Point inputPoint(Scanner scanner) {
         int x = scanner.nextInt();
         int y = scanner.nextInt();
 

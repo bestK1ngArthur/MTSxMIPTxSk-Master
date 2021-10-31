@@ -108,8 +108,8 @@ class Board {
     }
 
     private void move(Checker checker, Position from, Position to) throws Exception {
-        Position[] hitPositions = hitPositions(checker, from);
-        if (hitPositions.length > 0 && !List.of(hitPositions).contains(to)) {
+        Position[] availableHitPositions = availableHitPositions(checker, from);
+        if (availableHitPositions.length > 0 && !List.of(availableHitPositions).contains(to)) {
             throw new GameInvalidMoveException();
         }
 
@@ -117,12 +117,15 @@ class Board {
         setChecker(null, from);
     }
 
-    private void hit(Checker checker, Position from, Position to) throws Exception {
-        Position hitPosition = hitPosition(from, to);
+    private void hit(Checker checker, Position from, Position to) {
+        Position[] hitPositions = hitPositions(from, to);
 
         setChecker(checker, to);
         setChecker(null, from);
-        setChecker(null, hitPosition);
+
+        for (Position position : hitPositions) {
+            setChecker(null, position);
+        }
     }
 
     private Checker getChecker(Position position) {
@@ -182,7 +185,7 @@ class Board {
         return rowIndex >= 0 && rowIndex < SIZE && columnIndex >= 0 && columnIndex < SIZE;
     }
 
-    private Position[] hitPositions(Checker checker, Position position) {
+    private Position[] availableHitPositions(Checker checker, Position position) {
         int rowIndex = getRowIndex(position.row);
         int columnIndex = getColumnIndex(position.column);
 
@@ -209,23 +212,41 @@ class Board {
                 .toArray(Position[]::new);
     }
 
-    private Position hitPosition(Position from, Position to) throws Exception  {
+    private Position[] hitPositions(Position from, Position to)  {
         int fromRowIndex = getRowIndex(from.row);
         int fromColumnIndex = getColumnIndex(from.column);
         int toRowIndex = getRowIndex(to.row);
         int toColumnIndex = getColumnIndex(to.column);
 
+        ArrayList<Position> positions = new ArrayList<>();
+
         if (toRowIndex > fromRowIndex && toColumnIndex > fromColumnIndex) {
-            return getPosition(toRowIndex - 1, toColumnIndex - 1);
+            for (int rowIndex = fromRowIndex + 1; rowIndex < toRowIndex; rowIndex++) {
+                for (int columnIndex = fromColumnIndex + 1; columnIndex < toColumnIndex; columnIndex++) {
+                    positions.add(getPosition(rowIndex, columnIndex));
+                }
+            }
         } else if (toRowIndex > fromRowIndex && toColumnIndex < fromColumnIndex) {
-            return getPosition(toRowIndex - 1, fromColumnIndex - 1);
+            for (int rowIndex = fromRowIndex + 1; rowIndex < toRowIndex; rowIndex++) {
+                for (int columnIndex = toColumnIndex + 1; columnIndex < fromColumnIndex; columnIndex++) {
+                    positions.add(getPosition(rowIndex, columnIndex));
+                }
+            }
         } else if (toRowIndex < fromRowIndex && toColumnIndex > fromColumnIndex) {
-            return getPosition(fromRowIndex - 1, toColumnIndex - 1);
+            for (int rowIndex = toRowIndex + 1; rowIndex < fromRowIndex; rowIndex++) {
+                for (int columnIndex = fromColumnIndex + 1; columnIndex < toColumnIndex; columnIndex++) {
+                    positions.add(getPosition(rowIndex, columnIndex));
+                }
+            }
         } else if (toRowIndex < fromRowIndex && toColumnIndex < fromColumnIndex) {
-            return getPosition(fromRowIndex - 1, fromColumnIndex - 1);
+            for (int rowIndex = toRowIndex + 1; rowIndex < fromRowIndex; rowIndex++) {
+                for (int columnIndex = toColumnIndex + 1; columnIndex < fromColumnIndex; columnIndex++) {
+                    positions.add(getPosition(rowIndex, columnIndex));
+                }
+            }
         }
 
-        throw new GameErrorException();
+        return positions.toArray(new Position[positions.size()]);
     }
 
     static class Position {

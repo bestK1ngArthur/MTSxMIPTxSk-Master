@@ -31,13 +31,22 @@ class GameErrorException extends Exception {
     }
 }
 
+/**
+ * Game contains logic for playing Russian checkers
+ * @author Artem Belkov
+ */
 public final class Game {
-    private Board board;
-
     private static final String COORDINATE_REGEX = "([a-z])\\d";
     private static final String COORDINATE_KING_REGEX = "([A-Z])\\d";
     private static final String COORDINATE_DELIMITER = " ";
 
+    private Board board;
+
+    /**
+     * Game constructor
+     * @param whiteCoordinates the string with white chechkers coordinates
+     * @param blackCoordinates the string with black chechkers coordinates
+     */
     public Game(String whiteCoordinates, String blackCoordinates) throws Exception {
         String[] white = whiteCoordinates.split(COORDINATE_DELIMITER);
         String[] black = blackCoordinates.split(COORDINATE_DELIMITER);
@@ -55,6 +64,10 @@ public final class Game {
         this.board = new Board(checkers, positions);
     }
 
+    /**
+     * Make game move
+     * @param move the string with white and black move
+     */
     public void makeMove(String move) throws Exception {
         String[] movesArray = move.split(COORDINATE_DELIMITER);
 
@@ -66,15 +79,23 @@ public final class Game {
         moveChecker(movesArray[1]);
     }
 
+    /**
+     * Make game move
+     * @return the string with coordinates of white checkers
+     */
     public String getWhiteCoordinates() throws Exception {
         return getCoordinates(Checker.Color.WHITE);
     }
 
+    /**
+     * Make game move
+     * @return the string with coordinates of black checkers
+     */
     public String getBlackCoordinates() throws Exception {
         return getCoordinates(Checker.Color.BLACK);
     }
 
-    public String getCoordinates(Checker.Color color) throws Exception {
+    private String getCoordinates(Checker.Color color) throws Exception {
         Checker[] checkers = board.getCheckers(color);
         Board.Position[] positions = board.getPositions(color);
 

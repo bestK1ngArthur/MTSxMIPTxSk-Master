@@ -2,7 +2,6 @@ package ru.bestk1ng.master;
 
 import org.junit.jupiter.api.Test;
 import org.assertj.core.api.Assertions;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class AppTest {
     @Test
@@ -26,7 +25,7 @@ public class AppTest {
     }
 
     @Test
-    void test3() throws Exception {
+    void test2() throws Exception {
         String whiteCoordinates = "a1 d2 d4 f2";
         String blackCoordinates = "b4 d6 f4";
 
@@ -42,18 +41,18 @@ public class AppTest {
     }
 
     @Test
-    void test7() {
-        assertThatThrownBy(() -> {
-            String whiteCoordinates = "D8 c5 f6 g1";
-            String blackCoordinates = "a5 f4 h6 h8";
+    void test3() throws Exception {
+        String whiteCoordinates = "D8 c5 f6 g1";
+        String blackCoordinates = "a5 f4 h6 h8";
 
-            Game game = new Game(whiteCoordinates, blackCoordinates);
+        Game game = new Game(whiteCoordinates, blackCoordinates);
 
-            game.makeMove("c5-d6 f4-e3");
-            game.makeMove("d6-c7 h8-g7");
-            game.makeMove("c7-b8 g7:e5");
-            game.makeMove("B8:F4:D2 h6-g5");
-        }).isInstanceOf(GameInvalidMoveException.class)
-                .hasMessageContaining("invalid move");
+        game.makeMove("c5-d6 f4-e3");
+        game.makeMove("d6-c7 h8-g7");
+        game.makeMove("c7-b8 g7:e5");
+        game.makeMove("B8:F4:D2 h6-g5");
+
+        Assertions.assertThat(game.getWhiteCoordinates()).isEqualTo("D2 D8 g1");
+        Assertions.assertThat(game.getBlackCoordinates()).isEqualTo("a5 g5");
     }
 }

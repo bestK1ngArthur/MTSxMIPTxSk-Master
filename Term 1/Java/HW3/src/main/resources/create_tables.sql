@@ -1,13 +1,11 @@
-drop table if exists aircrafts;
-create table aircrafts
+create table if not exist aircrafts
 (
     aircraft_code CHAR(3) not null primary key,
     model         JSONB   not null,
     range         INTEGER not null
 );
 
-drop table if exists airports;
-create table airports
+create table if not exist airports
 (
     airport_code CHAR(3) not null primary key,
     airport_name JSONB   not null,
@@ -16,8 +14,7 @@ create table airports
     timezone     TEXT    not null
 );
 
-drop table if exists boarding_passes;
-create table boarding_passes
+create table if not exist boarding_passes
 (
     ticket_no   CHAR(13)   not null,
     flight_id   INTEGER    not null,
@@ -29,16 +26,14 @@ create table boarding_passes
     foreign key (seat_no) references seats (seat_no)
 );
 
-drop table if exists bookings;
-create table bookings
+create table if not exist bookings
 (
     booking_ref  CHAR(6)        not null primary key,
     book_date    TIMESTAMPZ     not null,
     total_amount NUMERIC(10, 2) not null
 );
 
-drop table if exists flights;
-create table flights
+create table if not exist flights
 (
     flight_id           SERIAL      not null primary key,
     flight_no           CHAR(6)     not null,
@@ -55,8 +50,7 @@ create table flights
     foreign key (aircraft_code) references aircrafts (aircraft_code)
 );
 
-drop table if exists seats;
-create table seats
+create table if not exist seats
 (
     aircraft_code   CHAR(3)     not null,
     seat_no         VARCHAR(4)  not null,
@@ -64,8 +58,7 @@ create table seats
     primary key (aircraft_code, seat_no)
 );
 
-drop table if exists ticket_flights;
-create table ticket_flights
+create table if not exist ticket_flights
 (
     ticket_no       CHAR(13)    not null,
     flight_id       INTEGER     not null,
@@ -75,8 +68,7 @@ create table ticket_flights
     foreign key (flight_id) references flights (flight_id)
 );
 
-drop table if exists tickets;
-create table tickets
+create table if not exist tickets
 (
     ticket_no      CHAR(13)    not null primary key,
     book_ref       CHAR(6)     not null,

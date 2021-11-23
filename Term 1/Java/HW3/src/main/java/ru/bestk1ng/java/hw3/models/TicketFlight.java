@@ -1,4 +1,4 @@
-package ru.bestk1ng.java.hw3;
+package ru.bestk1ng.java.hw3.models;
 
 public class TicketFlight {
     private String ticketNumber;

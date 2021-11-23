@@ -1,4 +1,4 @@
-package ru.bestk1ng.java.hw3;
+package ru.bestk1ng.java.hw3.models;
 
 import java.awt.*;
 import java.util.Dictionary;

@@ -32,7 +32,7 @@
       <version>3.34.0</version>
     </dependency>
 
-    <!--  Implementation of connection pool -->
+    <!-- Implementation of connection pool -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>

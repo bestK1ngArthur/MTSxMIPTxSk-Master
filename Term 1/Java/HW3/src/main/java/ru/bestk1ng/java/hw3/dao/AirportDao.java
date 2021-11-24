@@ -1,12 +1,11 @@
 package ru.bestk1ng.java.hw3.dao;
 
 import ru.bestk1ng.java.hw3.DbConnectionFactory;
+import ru.bestk1ng.java.hw3.models.Aircraft;
 import ru.bestk1ng.java.hw3.models.Airport;
 
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +29,22 @@ public class AirportDao {
         throw new RuntimeException("Failed to get Airport");
     }
 
+    public boolean insertAirport(Airport airport) {
+        try (Connection connection = DbConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO airports VALUES (?, ?, ?, ?, ?)")) {
+            ps.setString(1, airport.getCode());
+            ps.setString(2, airport.getName().toJSONString());
+            ps.setString(3, airport.getCity().toJSONString());
+            ps.setString(4, airport.getCoordinates().toString());
+            ps.setString(5, airport.getTimeZone().toString());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
     public Set<Airport> getAirports() throws Exception {
         try (Connection connection = DbConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
@@ -47,7 +62,7 @@ public class AirportDao {
         String code = resultSet.getString("airport_code");
         JSONObject name = (JSONObject) parser.parse(resultSet.getString("airport_name"));
         JSONObject city = (JSONObject) parser.parse(resultSet.getString("city"));
-        Point coordinates = extractPoint(resultSet.getString("coordinates"));
+        Airport.Coordinates coordinates = new Airport.Coordinates(resultSet.getString("coordinates"));
         TimeZone timeZone = TimeZone.getTimeZone(ZoneId.of(resultSet.getString("timezone")));
 
         return new Airport(code, name, city, coordinates, timeZone);

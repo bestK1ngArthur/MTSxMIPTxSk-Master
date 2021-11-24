@@ -1,6 +1,6 @@
 package ru.bestk1ng.java.hw3;
 
-import ru.bestk1ng.java.hw3.models.Aircraft;
+import ru.bestk1ng.java.hw3.models.Airport;
 
 import java.util.Set;
 
@@ -14,10 +14,10 @@ public final class App {
         DBDaoFacade daoFacade = new DBDaoFacade();
         DBDownloader downloader = new DBDownloader(daoFacade);
         try {
-            downloader.download();
-            Set<Aircraft> aircrafts = daoFacade.aircraft.getAircrafts();
-            for (Aircraft aircraft:aircrafts) {
-                System.out.println(aircraft.getModel().get("ru"));
+//            downloader.download();
+            Set<Airport> airports = daoFacade.airport.getAirports();
+            for (Airport airport:airports) {
+                System.out.println(airport.getName().get("en"));
             }
         } catch (Exception e) {
             e.printStackTrace();

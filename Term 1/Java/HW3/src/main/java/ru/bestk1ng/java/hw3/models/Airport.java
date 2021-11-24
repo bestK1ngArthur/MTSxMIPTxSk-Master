@@ -9,10 +9,16 @@ public class Airport {
     private String code;
     private JSONObject name;
     private JSONObject city;
-    private Point coordinates;
+    private Coordinates coordinates;
     private TimeZone timeZone;
 
-    public Airport(String code, JSONObject name, JSONObject city, Point coordinates, TimeZone timeZone) {
+    public Airport(
+            String code,
+            JSONObject name,
+            JSONObject city,
+            Coordinates coordinates,
+            TimeZone timeZone
+    ) {
         this.code = code;
         this.name = name;
         this.city = city;
@@ -32,11 +38,34 @@ public class Airport {
         return city;
     }
 
-    public Point getCoordinates() {
+    public Coordinates getCoordinates() {
         return coordinates;
     }
 
     public TimeZone getTimeZone() {
         return timeZone;
+    }
+
+    public static class Coordinates {
+        public Float latitude;
+        public Float longitude;
+
+        public Coordinates(Float latitude, Float longitude) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        public Coordinates(String string) {
+            String[] values = string
+                    .replace("(", "")
+                    .replace(")", "")
+                    .split(",");
+            latitude = Float.parseFloat(values[0]);
+            longitude = Float.parseFloat(values[1]);
+        }
+
+        public String toString() {
+            return String.format("(%f,%f)", latitude, longitude);
+        }
     }
 }

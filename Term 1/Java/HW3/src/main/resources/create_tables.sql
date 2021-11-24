@@ -1,11 +1,11 @@
-create table if not exist aircrafts
+create table if not exists aircrafts
 (
-    aircraft_code CHAR(3) not null primary key,
+    aircraft_code CHAR(3) not null primary key ,
     model         JSONB   not null,
     range         INTEGER not null
 );
 
-create table if not exist airports
+create table if not exists airports
 (
     airport_code CHAR(3) not null primary key,
     airport_name JSONB   not null,
@@ -14,7 +14,7 @@ create table if not exist airports
     timezone     TEXT    not null
 );
 
-create table if not exist boarding_passes
+create table if not exists boarding_passes
 (
     ticket_no   CHAR(13)   not null,
     flight_id   INTEGER    not null,
@@ -26,14 +26,14 @@ create table if not exist boarding_passes
     foreign key (seat_no) references seats (seat_no)
 );
 
-create table if not exist bookings
+create table if not exists bookings
 (
     booking_ref  CHAR(6)        not null primary key,
     book_date    TIMESTAMPZ     not null,
     total_amount NUMERIC(10, 2) not null
 );
 
-create table if not exist flights
+create table if not exists flights
 (
     flight_id           SERIAL      not null primary key,
     flight_no           CHAR(6)     not null,
@@ -50,7 +50,7 @@ create table if not exist flights
     foreign key (aircraft_code) references aircrafts (aircraft_code)
 );
 
-create table if not exist seats
+create table if not exists seats
 (
     aircraft_code   CHAR(3)     not null,
     seat_no         VARCHAR(4)  not null,
@@ -58,7 +58,7 @@ create table if not exist seats
     primary key (aircraft_code, seat_no)
 );
 
-create table if not exist ticket_flights
+create table if not exists ticket_flights
 (
     ticket_no       CHAR(13)    not null,
     flight_id       INTEGER     not null,
@@ -68,7 +68,7 @@ create table if not exist ticket_flights
     foreign key (flight_id) references flights (flight_id)
 );
 
-create table if not exist tickets
+create table if not exists tickets
 (
     ticket_no      CHAR(13)    not null primary key,
     book_ref       CHAR(6)     not null,

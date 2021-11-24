@@ -3,9 +3,7 @@ package ru.bestk1ng.java.hw3.dao;
 import ru.bestk1ng.java.hw3.DbConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Aircraft;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +23,20 @@ public class AircraftDao {
             }
         }
         throw new RuntimeException("Failed to get Aircraft");
+    }
+
+    public boolean insertAircraft(Aircraft aircraft) {
+        try (Connection connection = DbConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO aircrafts VALUES (?, ?, ?)")) {
+            ps.setString(1, aircraft.getCode());
+            ps.setString(2, aircraft.getModel().toJSONString());
+            ps.setInt(3, aircraft.getRange());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
     public Set<Aircraft> getAircrafts() throws Exception {

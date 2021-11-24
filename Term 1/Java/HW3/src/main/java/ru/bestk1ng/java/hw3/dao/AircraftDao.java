@@ -18,12 +18,13 @@ public class AircraftDao {
     public Aircraft getAircraft(String code) throws Exception {
         try (Connection connection = DbConnectionFactory.getConnection();
              Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM aircrafts WHERE aircraft_code=" + code);
+            String sql = String.format("SELECT * FROM aircrafts WHERE aircraft_code=\"%s\"", code);
+            ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet.next()) {
                 return extract(resultSet);
             }
         }
-        throw new RuntimeException("failed to get user");
+        throw new RuntimeException("Failed to get Aircraft");
     }
 
     public Set<Aircraft> getAircrafts() throws Exception {

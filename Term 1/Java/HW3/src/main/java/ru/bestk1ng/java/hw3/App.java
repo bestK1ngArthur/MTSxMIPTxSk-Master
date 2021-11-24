@@ -26,8 +26,8 @@ public final class App {
 //        }
         try {
             AircraftDao dao = new AircraftDao();
-            Set<Aircraft> aircrafts = dao.getAircrafts();
-            System.out.println(aircrafts);
+            Aircraft aircraft = dao.getAircraft("BUS");
+            System.out.println(aircraft);
 
         } catch (Exception exception) {
             exception.printStackTrace();

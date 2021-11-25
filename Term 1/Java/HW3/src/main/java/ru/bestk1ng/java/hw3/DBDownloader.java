@@ -33,15 +33,16 @@ public class DBDownloader {
         this.isLogEnabled = isLogEnabled;
     }
 
-    public void download() throws Exception {
+    public void download() {
 //        downloadAircrafts();
 //        downloadAirports();
 //        downloadBoardingPasses();
 //        downloadBookings();
-        downloadFlights();
+//        downloadFlights();
+        downloadSeats();
     }
 
-    private void downloadAircrafts() throws Exception {
+    private void downloadAircrafts() {
         Function<String, Aircraft> map = (line) -> {
             String[] values = parseLine(line);
 
@@ -60,7 +61,7 @@ public class DBDownloader {
         downloadItems("aircrafts", map, save);
     }
 
-    private void downloadAirports() throws Exception {
+    private void downloadAirports() {
         Function<String, Airport> map = (line) -> {
             String[] values = parseLine(line);
 
@@ -81,7 +82,7 @@ public class DBDownloader {
         downloadItems("airports", map, save);
     }
 
-    private void downloadBoardingPasses() throws Exception {
+    private void downloadBoardingPasses() {
         Function<String, BoardingPass> map = (line) -> {
             String[] values = parseLine(line);
 
@@ -101,7 +102,7 @@ public class DBDownloader {
         downloadItems("boarding_passes", map, save);
     }
 
-    private void downloadBookings() throws Exception {
+    private void downloadBookings() {
         Function<String, Booking> map = (line) -> {
             String[] values = parseLine(line);
 
@@ -120,7 +121,7 @@ public class DBDownloader {
         downloadItems("bookings", map, save);
     }
 
-    private void downloadFlights() throws Exception {
+    private void downloadFlights() {
         Function<String, Flight> map = (line) -> {
             String[] values = parseLine(line);
 
@@ -165,6 +166,27 @@ public class DBDownloader {
         downloadItems("flights", map, save);
     }
 
+    private void downloadSeats() {
+        Function<String, Seat> map = (line) -> {
+            String[] values = parseLine(line);
+
+            String aircraftCode = values[0];
+            String seatNumber = values[1];
+            String fareConditions = values[2];
+
+            return new Seat(aircraftCode, seatNumber, fareConditions);
+        };
+
+        Function<Seat, Void> save = (seat) -> {
+            daoFacade.seat.insertSeat(seat);
+            return null;
+        };
+
+        downloadItems("seats", map, save);
+    }
+
+    // Generic Items
+
     private <Item> void downloadItems(String fileName, Function<String, Item> map, Function<Item, Void> save) {
         Long progressStartTime = System.currentTimeMillis();
         printFileName(fileName);
@@ -201,6 +223,8 @@ public class DBDownloader {
 
         printEndProgress();
     }
+
+    // Parsing
 
     private JSONObject parseJson(String string) {
         String raw = string
@@ -252,9 +276,10 @@ public class DBDownloader {
         }
     }
 
+    // Logging
+
     private void printFileName(String fileName) {
         if (!isLogEnabled) { return; }
-
         System.out.println(String.format("Downloading file: %s.csv", fileName));
     }
 
@@ -287,7 +312,6 @@ public class DBDownloader {
 
     private void printEndProgress() {
         if (!isLogEnabled) { return; }
-
         System.out.println();
     }
 }

@@ -20,6 +20,27 @@ public class FlightDao {
         throw new RuntimeException("Failed to get Flight");
     }
 
+    public boolean insertFlight(Flight flight) {
+        try (Connection connection = DbConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO flights VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            ps.setInt(1, flight.getFlightId());
+            ps.setString(2, flight.getFlightNumber());
+            ps.setDate(3, flight.getScheduledDeparture());
+            ps.setDate(4, flight.getScheduledArrival());
+            ps.setString(5, flight.getDepartureAirport());
+            ps.setString(6, flight.getArrivalAirport());
+            ps.setString(7, flight.getStatus().toString());
+            ps.setString(8, flight.getAircraftCode());
+            ps.setDate(9, flight.getActualDeparture());
+            ps.setDate(10, flight.getActualArrival());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
     public Set<Flight> getFlights() throws Exception {
         try (Connection connection = DbConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
@@ -36,14 +57,14 @@ public class FlightDao {
     private Flight extract(ResultSet resultSet) throws Exception {
         Integer flightId = resultSet.getInt("flight_id");
         String flightNumber = resultSet.getString("flight_no");
-        Timestamp scheduledDeparture = Timestamp.valueOf(resultSet.getString("scheduled_departure"));
-        Timestamp scheduledArrival = Timestamp.valueOf(resultSet.getString("scheduled_arrival"));
+        Date scheduledDeparture = resultSet.getDate("scheduled_departure");
+        Date scheduledArrival = resultSet.getDate("scheduled_arrival");
         String departureAirport = resultSet.getString("departure_airport");
         String arrivalAirport = resultSet.getString("arrival_airport");
-        Flight.Status status = extractStatus(resultSet.getString("status"));
+        Flight.Status status = Flight.Status.valueOf(resultSet.getString("status"));
         String aircraftCode = resultSet.getString("aircraft_code");
-        Timestamp actualDeparture = Timestamp.valueOf(resultSet.getString("actual_departure"));
-        Timestamp actualArrival = Timestamp.valueOf(resultSet.getString("actual_arrival"));
+        Date actualDeparture = resultSet.getDate("actual_departure");
+        Date actualArrival = resultSet.getDate("actual_arrival");
 
         return new Flight(
                 flightId,
@@ -57,17 +78,5 @@ public class FlightDao {
                 actualDeparture,
                 actualArrival
         );
-    }
-
-    private Flight.Status extractStatus(String string) {
-        switch (string) {
-            case "Scheduled": return Flight.Status.SCHEDULED;
-            case "On Time": return Flight.Status.ONTIME;
-            case "Delayed": return Flight.Status.DELAYED;
-            case "Departed": return Flight.Status.DEPARTED;
-            case "Arrived": return Flight.Status.ARRIVED;
-            case "Canceled": return Flight.Status.CANCELLED;
-            default: return null;
-        }
     }
 }

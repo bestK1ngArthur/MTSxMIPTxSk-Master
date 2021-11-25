@@ -12,7 +12,6 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -38,7 +37,8 @@ public class DBDownloader {
 //        downloadAircrafts();
 //        downloadAirports();
 //        downloadBoardingPasses();
-        downloadBookings();
+//        downloadBookings();
+        downloadFlights();
     }
 
     private void downloadAircrafts() throws Exception {
@@ -52,21 +52,12 @@ public class DBDownloader {
             return new Aircraft(code, model, range);
         };
 
-        Long progressStartTime = System.currentTimeMillis();
-        String fileName = "aircrafts";
+        Function<Aircraft, Void> save = (aircraft) -> {
+            daoFacade.aircraft.insertAircraft(aircraft);
+            return null;
+        };
 
-        printFileName(fileName);
-
-        List<Aircraft> aircrafts = getItems(fileName, map);
-        Long progressTotal = (long) aircrafts.size();
-
-        for (int i = 0; i < aircrafts.size(); i++) {
-            Long progressCurrent = Long.valueOf(i+1);
-            daoFacade.aircraft.insertAircraft(aircrafts.get(i));
-            printProgress(progressStartTime, progressTotal, progressCurrent);
-        }
-
-        printEndProgress();
+        downloadItems("aircrafts", map, save);
     }
 
     private void downloadAirports() throws Exception {
@@ -82,21 +73,12 @@ public class DBDownloader {
             return new Airport(code, name, city, coordinates, timeZone);
         };
 
-        Long progressStartTime = System.currentTimeMillis();
-        String fileName = "airports";
+        Function<Airport, Void> save = (airport) -> {
+            daoFacade.airport.insertAirport(airport);
+            return null;
+        };
 
-        printFileName(fileName);
-
-        List<Airport> airports= getItems(fileName, map);
-        Long progressTotal = (long) airports.size();
-
-        for (int i = 0; i < airports.size(); i++) {
-            Long progressCurrent = Long.valueOf(i+1);
-            daoFacade.airport.insertAirport(airports.get(i));
-            printProgress(progressStartTime, progressTotal, progressCurrent);
-        }
-
-        printEndProgress();
+        downloadItems("airports", map, save);
     }
 
     private void downloadBoardingPasses() throws Exception {
@@ -111,21 +93,12 @@ public class DBDownloader {
             return new BoardingPass(ticketNumber, flightId, boardingNumber, seatNumber);
         };
 
-        Long progressStartTime = System.currentTimeMillis();
-        String fileName = "boarding_passes";
+        Function<BoardingPass, Void> save = (boardingPass) -> {
+            daoFacade.boardingPass.insertBoardingPass(boardingPass);
+            return null;
+        };
 
-        printFileName(fileName);
-
-        List<BoardingPass> boardingPasses = getItems(fileName, map);
-        Long progressTotal = (long) boardingPasses.size();
-
-        for(int i = 0; i < boardingPasses.size(); i++) {
-            Long progressCurrent = Long.valueOf(i+1);
-            daoFacade.boardingPass.insertBoardingPass(boardingPasses.get(i));
-            printProgress(progressStartTime, progressTotal, progressCurrent);
-        }
-
-        printEndProgress();
+        downloadItems("boarding_passes", map, save);
     }
 
     private void downloadBookings() throws Exception {
@@ -139,27 +112,75 @@ public class DBDownloader {
             return new Booking(reference, date, totalAmount);
         };
 
-        Long progressStartTime = System.currentTimeMillis();
-        String fileName = "bookings";
+        Function<Booking, Void> save = (booking) -> {
+            daoFacade.booking.insertBooking(booking);
+            return null;
+        };
 
+        downloadItems("bookings", map, save);
+    }
+
+    private void downloadFlights() throws Exception {
+        Function<String, Flight> map = (line) -> {
+            String[] values = parseLine(line);
+
+            Integer flightId = Integer.valueOf(values[0]);
+            String flightNumber = values[1];
+            Date scheduledDeparture = parseDate(values[2]);
+            Date scheduledArrival = parseDate(values[3]);
+            String departureAirport = values[4];
+            String arrivalAirport = values[5];
+            Flight.Status status = parseStatus(values[6]);
+            String aircraftCode = values[7];
+
+            Date actualDeparture = null;
+            if (values.length >= 9) {
+                actualDeparture = parseDate(values[8]);
+            }
+
+            Date actualArrival = null;
+            if (values.length >= 10) {
+                actualArrival = parseDate(values[9]);
+            }
+
+            return new Flight(
+                    flightId,
+                    flightNumber,
+                    scheduledDeparture,
+                    scheduledArrival,
+                    departureAirport,
+                    arrivalAirport,
+                    status,
+                    aircraftCode,
+                    actualDeparture,
+                    actualArrival
+            );
+        };
+
+        Function<Flight, Void> save = (flight) -> {
+            daoFacade.flight.insertFlight(flight);
+            return null;
+        };
+
+        downloadItems("flights", map, save);
+    }
+
+    private <Item> void downloadItems(String fileName, Function<String, Item> map, Function<Item, Void> save) {
+        Long progressStartTime = System.currentTimeMillis();
         printFileName(fileName);
 
-        List<Booking> bookings = getItems(fileName, map);
-        Long progressTotal = (long) bookings.size();
-
-        for(int i = 0; i < bookings.size(); i++) {
-            Long progressCurrent = Long.valueOf(i+1);
-            daoFacade.booking.insertBooking(bookings.get(i));
-            printProgress(progressStartTime, progressTotal, progressCurrent);
+        try {
+            List<Item> items = getItems(fileName, map);
+            saveItems(items, progressStartTime, save);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        printEndProgress();
     }
 
     private <Item> List<Item> getItems(String fileName, Function<String, Item> map) throws Exception {
         URL url = new URL(baseUrl + fileName + ".csv");
 
-        List<Item> objects = new ArrayList<Item>();
+        List<Item> objects;
         try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
             objects = br.lines()
                     .skip(1)
@@ -167,6 +188,18 @@ public class DBDownloader {
                     .collect(Collectors.toList());
         }
         return objects;
+    }
+
+    private <Item> void saveItems(List<Item> items, Long progressStartTime, Function<Item, Void> save) {
+        Long progressTotal = (long) items.size();
+
+        for(int i = 0; i < items.size(); i++) {
+            Long progressCurrent = Long.valueOf(i+1);
+            save.apply(items.get(i));
+            printProgress(progressStartTime, progressTotal, progressCurrent);
+        }
+
+        printEndProgress();
     }
 
     private JSONObject parseJson(String string) {
@@ -205,6 +238,18 @@ public class DBDownloader {
         }
 
         return new java.sql.Date(date.getTime());
+    }
+
+    private Flight.Status parseStatus(String string) {
+        switch (string) {
+            case "Scheduled": return Flight.Status.SCHEDULED;
+            case "On Time": return Flight.Status.ONTIME;
+            case "Delayed": return Flight.Status.DELAYED;
+            case "Departed": return Flight.Status.DEPARTED;
+            case "Arrived": return Flight.Status.ARRIVED;
+            case "Cancelled": return Flight.Status.CANCELLED;
+            default: return null;
+        }
     }
 
     private void printFileName(String fileName) {

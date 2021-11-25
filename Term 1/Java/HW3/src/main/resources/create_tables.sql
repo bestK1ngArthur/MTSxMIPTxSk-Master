@@ -35,7 +35,7 @@ create table if not exists bookings
 
 create table if not exists flights
 (
-    flight_id           SERIAL      not null primary key,
+    flight_id           SERIAL      not null,
     flight_no           CHAR(6)     not null,
     scheduled_departure TIMESTAMPZ  not null,
     scheduled_arrival   TIMESTAMPZ  not null,
@@ -45,6 +45,7 @@ create table if not exists flights
     aircraft_code       CHAR(3)     not null,
     actual_departure    TIMESTAMPZ,
     actual_arrival      TIMESTAMPZ,
+    primary key (flight_id),
     foreign key (departure_airport) references airports (airport_code),
     foreign key (arrival_airport) references airports (airport_code),
     foreign key (aircraft_code) references aircrafts (aircraft_code)

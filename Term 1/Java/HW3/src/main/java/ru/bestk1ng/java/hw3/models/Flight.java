@@ -1,6 +1,6 @@
 package ru.bestk1ng.java.hw3.models;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 public class Flight {
     public enum Status {
@@ -9,26 +9,26 @@ public class Flight {
 
     private Integer flightId;
     private String flightNumber;
-    private Timestamp scheduledDeparture;
-    private Timestamp scheduledArrival;
+    private Date scheduledDeparture;
+    private Date scheduledArrival;
     private String departureAirport;
     private String arrivalAirport;
     private Status status;
     private String aircraftCode;
-    private Timestamp actualDeparture;
-    private Timestamp actualArrival;
+    private Date actualDeparture;
+    private Date actualArrival;
 
     public Flight(
             Integer flightId,
             String flightNumber,
-            Timestamp scheduledDeparture,
-            Timestamp scheduledArrival,
+            Date scheduledDeparture,
+            Date scheduledArrival,
             String departureAirport,
             String arrivalAirport,
             Status status,
             String aircraftCode,
-            Timestamp actualDeparture,
-            Timestamp actualArrival
+            Date actualDeparture,
+            Date actualArrival
     ) {
         this.flightId = flightId;
         this.flightNumber = flightNumber;
@@ -50,11 +50,11 @@ public class Flight {
         return flightNumber;
     }
 
-    public Timestamp getScheduledDeparture() {
+    public Date getScheduledDeparture() {
         return scheduledDeparture;
     }
 
-    public Timestamp getScheduledArrival() {
+    public Date getScheduledArrival() {
         return scheduledArrival;
     }
 
@@ -74,11 +74,11 @@ public class Flight {
         return aircraftCode;
     }
 
-    public Timestamp getActualDeparture() {
+    public Date getActualDeparture() {
         return actualDeparture;
     }
 
-    public Timestamp getActualArrival() {
+    public Date getActualArrival() {
         return actualArrival;
     }
 }

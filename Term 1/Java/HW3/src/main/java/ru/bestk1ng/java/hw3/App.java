@@ -12,9 +12,9 @@ public final class App {
         System.out.println("Start");
 
         DBDaoFacade daoFacade = new DBDaoFacade();
-        DBDownloader downloader = new DBDownloader(daoFacade);
+        DBDownloader downloader = new DBDownloader(daoFacade, true);
         try {
-//            downloader.download();
+            downloader.download();
             Set<Airport> airports = daoFacade.airport.getAirports();
             for (Airport airport:airports) {
                 System.out.println(airport.getName().get("en"));

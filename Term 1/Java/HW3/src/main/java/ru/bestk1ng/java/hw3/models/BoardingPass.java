@@ -6,7 +6,12 @@ public class BoardingPass {
     private Integer boardingNumber;
     private String seatNumber;
 
-    public BoardingPass(String ticketNumber, Integer flightId, Integer boardingNumber, String seatNumber) {
+    public BoardingPass(
+            String ticketNumber,
+            Integer flightId,
+            Integer boardingNumber,
+            String seatNumber
+    ) {
         this.ticketNumber = ticketNumber;
         this.flightId = flightId;
         this.boardingNumber = boardingNumber;

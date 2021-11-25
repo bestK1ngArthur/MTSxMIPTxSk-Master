@@ -3,9 +3,7 @@ package ru.bestk1ng.java.hw3.dao;
 import ru.bestk1ng.java.hw3.DbConnectionFactory;
 import ru.bestk1ng.java.hw3.models.BoardingPass;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +18,21 @@ public class BoardingPassDao {
             }
         }
         throw new RuntimeException("Failed to get Boarding");
+    }
+
+    public boolean insertBoardingPass(BoardingPass boardingPass) {
+        try (Connection connection = DbConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO boarding_passes VALUES (?, ?, ?, ?)")) {
+            ps.setString(1, boardingPass.getTicketNumber());
+            ps.setInt(2, boardingPass.getFlightId());
+            ps.setInt(3, boardingPass.getBoardingNumber());
+            ps.setString(4, boardingPass.getSeatNumber());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
     public Set<BoardingPass> getBoardingPasses() throws Exception {

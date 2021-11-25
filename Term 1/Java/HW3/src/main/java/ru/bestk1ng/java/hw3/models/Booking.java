@@ -5,9 +5,9 @@ import java.sql.Date;
 public class Booking {
     private String reference;
     private Date date;
-    private Long totalAmount;
+    private Double totalAmount;
 
-    public Booking(String reference, Date date, Long totalAmount) {
+    public Booking(String reference, Date date, Double totalAmount) {
         this.reference = reference;
         this.date = date;
         this.totalAmount = totalAmount;
@@ -21,7 +21,7 @@ public class Booking {
         return date;
     }
 
-    public Long getTotalAmount() {
+    public Double getTotalAmount() {
         return totalAmount;
     }
 }

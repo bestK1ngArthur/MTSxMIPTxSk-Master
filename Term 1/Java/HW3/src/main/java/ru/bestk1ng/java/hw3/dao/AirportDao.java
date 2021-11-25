@@ -1,7 +1,6 @@
 package ru.bestk1ng.java.hw3.dao;
 
 import ru.bestk1ng.java.hw3.DbConnectionFactory;
-import ru.bestk1ng.java.hw3.models.Aircraft;
 import ru.bestk1ng.java.hw3.models.Airport;
 
 import java.awt.*;
@@ -36,7 +35,7 @@ public class AirportDao {
             ps.setString(2, airport.getName().toJSONString());
             ps.setString(3, airport.getCity().toJSONString());
             ps.setString(4, airport.getCoordinates().toString());
-            ps.setString(5, airport.getTimeZone().toString());
+            ps.setString(5, airport.getTimeZone().getID());
             return ps.executeUpdate() == 1;
         } catch (SQLException ex) {
             ex.printStackTrace();

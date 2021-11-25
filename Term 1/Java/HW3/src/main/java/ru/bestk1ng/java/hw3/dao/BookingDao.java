@@ -3,10 +3,7 @@ package ru.bestk1ng.java.hw3.dao;
 import ru.bestk1ng.java.hw3.DbConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Booking;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Date;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +18,20 @@ public class BookingDao {
             }
         }
         throw new RuntimeException("Failed to get Booking");
+    }
+
+    public boolean insertBooking(Booking booking) {
+        try (Connection connection = DbConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO bookings VALUES (?, ?, ?)")) {
+            ps.setString(1, booking.getReference());
+            ps.setDate(2, booking.getDate());
+            ps.setDouble(3, booking.getTotalAmount());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
     public Set<Booking> getBookings() throws Exception {
@@ -38,8 +49,8 @@ public class BookingDao {
 
     private Booking extract(ResultSet resultSet) throws Exception {
         String reference = resultSet.getString("booking_ref");
-        Date date = Date.valueOf(resultSet.getString("book_date"));
-        Long totalAmount = resultSet.getLong("total_amount");
+        Date date = resultSet.getDate("book_date");
+        Double totalAmount = resultSet.getDouble("total_amount");
 
         return new Booking(reference, date, totalAmount);
     }

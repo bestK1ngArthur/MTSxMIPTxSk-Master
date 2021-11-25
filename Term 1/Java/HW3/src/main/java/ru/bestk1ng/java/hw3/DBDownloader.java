@@ -39,7 +39,9 @@ public class DBDownloader {
 //        downloadBoardingPasses();
 //        downloadBookings();
 //        downloadFlights();
-        downloadSeats();
+//        downloadSeats();
+//        downloadTickets();
+        downloadTicketFlights();
     }
 
     private void downloadAircrafts() {
@@ -183,6 +185,46 @@ public class DBDownloader {
         };
 
         downloadItems("seats", map, save);
+    }
+
+    private void downloadTickets() {
+        Function<String, Ticket> map = (line) -> {
+            String[] values = parseLine(line);
+
+            String ticketNumber = values[0];
+            String bookingReference = values[1];
+            String passengerId = values[2];
+            String passengerName = values[3];
+            JSONObject contactData = parseJson(values[4]);
+
+            return new Ticket(ticketNumber, bookingReference, passengerId, passengerName, contactData);
+        };
+
+        Function<Ticket, Void> save = (ticket) -> {
+            daoFacade.ticket.insertTicket(ticket);
+            return null;
+        };
+
+        downloadItems("tickets", map, save);
+    }
+
+    private void downloadTicketFlights() {
+        Function<String, TicketFlight> map = (line) -> {
+            String[] values = parseLine(line);
+
+            String ticketNumber = values[0];
+            Integer flightId = Integer.valueOf(values[1]);
+            String fareConditions = values[2];
+
+            return new TicketFlight(ticketNumber, flightId, fareConditions);
+        };
+
+        Function<TicketFlight, Void> save = (ticketFlight) -> {
+            daoFacade.ticketFlight.insertTicketFlight(ticketFlight);
+            return null;
+        };
+
+        downloadItems("ticket_flights", map, save);
     }
 
     // Generic Items

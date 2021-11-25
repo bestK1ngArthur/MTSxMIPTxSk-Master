@@ -5,9 +5,7 @@ import org.json.simple.parser.JSONParser;
 import ru.bestk1ng.java.hw3.DbConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Ticket;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +22,22 @@ public class TicketDao {
             }
         }
         throw new RuntimeException("Failed to get Seat");
+    }
+
+    public boolean insertTicket(Ticket ticket) {
+        try (Connection connection = DbConnectionFactory.getConnection();
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO tickets VALUES (?, ?, ?, ?, ?)")) {
+            ps.setString(1, ticket.getTicketNumber());
+            ps.setString(2, ticket.getBookingReference());
+            ps.setString(3, ticket.getPassengerId());
+            ps.setString(4, ticket.getPassengerName());
+            ps.setString(5, ticket.getContactData().toJSONString());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 
     public Set<Ticket> getTickets() throws Exception {

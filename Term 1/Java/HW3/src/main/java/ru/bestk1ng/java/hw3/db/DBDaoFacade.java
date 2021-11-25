@@ -1,6 +1,6 @@
-package ru.bestk1ng.java.hw3;
+package ru.bestk1ng.java.hw3.db;
 
-import ru.bestk1ng.java.hw3.dao.*;
+import ru.bestk1ng.java.hw3.db.dao.*;
 
 public class DBDaoFacade {
     public AircraftDao aircraft = new AircraftDao();

@@ -1,6 +1,8 @@
-package ru.bestk1ng.java.hw3.dao;
+package ru.bestk1ng.java.hw3.db.dao;
 
-import ru.bestk1ng.java.hw3.DbConnectionFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import ru.bestk1ng.java.hw3.db.DBConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Airport;
 
 import java.awt.*;
@@ -10,14 +12,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 public class AirportDao {
     private JSONParser parser = new JSONParser();
 
     public Airport getAirport(String code) throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement statement = connection.createStatement()) {
             String sql = String.format("SELECT * FROM airports WHERE airport_code=\"%s\"", code);
             ResultSet resultSet = statement.executeQuery(sql);
@@ -29,7 +28,7 @@ public class AirportDao {
     }
 
     public boolean insertAirport(Airport airport) {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO airports VALUES (?, ?, ?, ?, ?)")) {
             ps.setString(1, airport.getCode());
             ps.setString(2, airport.getName().toJSONString());
@@ -45,7 +44,7 @@ public class AirportDao {
     }
 
     public Set<Airport> getAirports() throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM airports");
             Set<Airport> airports = new HashSet<>();

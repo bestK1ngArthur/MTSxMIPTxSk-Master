@@ -1,6 +1,6 @@
-package ru.bestk1ng.java.hw3.dao;
+package ru.bestk1ng.java.hw3.db.dao;
 
-import ru.bestk1ng.java.hw3.DbConnectionFactory;
+import ru.bestk1ng.java.hw3.db.DBConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Seat;
 
 import java.sql.*;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class SeatDao {
     public Seat getSeat(String aircraftCode, String seatNumber) throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement statement = connection.createStatement()) {
             String sql = String.format("SELECT * FROM seats WHERE aircraft_code=\"%s\" AND seat_no=\"%s\"", aircraftCode, seatNumber);
             ResultSet resultSet = statement.executeQuery(sql);
@@ -21,7 +21,7 @@ public class SeatDao {
     }
 
     public boolean insertSeat(Seat seat) {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO seats VALUES (?, ?, ?)")) {
             ps.setString(1, seat.getAircraftCode());
             ps.setString(2, seat.getSeatNumber());
@@ -35,7 +35,7 @@ public class SeatDao {
     }
 
     public Set<Seat> getSeats() throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM seats");
             Set<Seat> seats = new HashSet<>();

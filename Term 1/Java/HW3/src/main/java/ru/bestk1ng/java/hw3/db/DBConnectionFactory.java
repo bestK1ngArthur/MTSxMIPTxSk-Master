@@ -1,7 +1,8 @@
-package ru.bestk1ng.java.hw3;
+package ru.bestk1ng.java.hw3.db;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import ru.bestk1ng.java.hw3.App;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
@@ -13,7 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Collectors;
 
-public class DbConnectionFactory {
+public class DBConnectionFactory {
     private final static String pathToDb = ".sqlite/airtrans.sqlite";
     private static final HikariConfig config = new HikariConfig();
     private static final DataSource ds;

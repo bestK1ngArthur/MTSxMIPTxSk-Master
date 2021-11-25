@@ -1,9 +1,8 @@
-package ru.bestk1ng.java.hw3;
-
-import ru.bestk1ng.java.hw3.models.*;
+package ru.bestk1ng.java.hw3.db;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import ru.bestk1ng.java.hw3.models.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -34,13 +33,13 @@ public class DBDownloader {
     }
 
     public void download() {
-//        downloadAircrafts();
-//        downloadAirports();
-//        downloadBoardingPasses();
-//        downloadBookings();
-//        downloadFlights();
-//        downloadSeats();
-//        downloadTickets();
+        downloadAircrafts();
+        downloadAirports();
+        downloadBoardingPasses();
+        downloadBookings();
+        downloadFlights();
+        downloadSeats();
+        downloadTickets();
         downloadTicketFlights();
     }
 
@@ -303,7 +302,7 @@ public class DBDownloader {
             e.printStackTrace();
         }
 
-        return new java.sql.Date(date.getTime());
+        return new Date(date.getTime());
     }
 
     private Flight.Status parseStatus(String string) {

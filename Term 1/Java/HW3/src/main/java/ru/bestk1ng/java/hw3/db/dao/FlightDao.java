@@ -1,6 +1,6 @@
-package ru.bestk1ng.java.hw3.dao;
+package ru.bestk1ng.java.hw3.db.dao;
 
-import ru.bestk1ng.java.hw3.DbConnectionFactory;
+import ru.bestk1ng.java.hw3.db.DBConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Flight;
 
 import java.sql.*;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class FlightDao {
     public Flight getFlight(Integer flightId) throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement statement = connection.createStatement()) {
             String sql = String.format("SELECT * FROM flights WHERE flight_id=\"%d\"", flightId);
             ResultSet resultSet = statement.executeQuery(sql);
@@ -21,7 +21,7 @@ public class FlightDao {
     }
 
     public boolean insertFlight(Flight flight) {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO flights VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             ps.setInt(1, flight.getFlightId());
             ps.setString(2, flight.getFlightNumber());
@@ -42,7 +42,7 @@ public class FlightDao {
     }
 
     public Set<Flight> getFlights() throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM flights");
             Set<Flight> flights = new HashSet<>();

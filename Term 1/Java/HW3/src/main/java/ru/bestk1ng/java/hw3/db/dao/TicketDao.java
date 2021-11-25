@@ -1,8 +1,8 @@
-package ru.bestk1ng.java.hw3.dao;
+package ru.bestk1ng.java.hw3.db.dao;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import ru.bestk1ng.java.hw3.DbConnectionFactory;
+import ru.bestk1ng.java.hw3.db.DBConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Ticket;
 
 import java.sql.*;
@@ -13,7 +13,7 @@ public class TicketDao {
     private JSONParser parser = new JSONParser();
 
     public Ticket getTicket(String ticketNumber) throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement statement = connection.createStatement()) {
             String sql = String.format("SELECT * FROM tickets WHERE ticket_no=\"%s\"", ticketNumber);
             ResultSet resultSet = statement.executeQuery(sql);
@@ -25,7 +25,7 @@ public class TicketDao {
     }
 
     public boolean insertTicket(Ticket ticket) {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO tickets VALUES (?, ?, ?, ?, ?)")) {
             ps.setString(1, ticket.getTicketNumber());
             ps.setString(2, ticket.getBookingReference());
@@ -41,7 +41,7 @@ public class TicketDao {
     }
 
     public Set<Ticket> getTickets() throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM tickets");
             Set<Ticket> tickets = new HashSet<>();

@@ -1,20 +1,19 @@
-package ru.bestk1ng.java.hw3.dao;
+package ru.bestk1ng.java.hw3.db.dao;
 
-import ru.bestk1ng.java.hw3.DbConnectionFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import ru.bestk1ng.java.hw3.db.DBConnectionFactory;
 import ru.bestk1ng.java.hw3.models.Aircraft;
 
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 public class AircraftDao {
     private JSONParser parser = new JSONParser();
 
     public Aircraft getAircraft(String code) throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement statement = connection.createStatement()) {
             String sql = String.format("SELECT * FROM aircrafts WHERE aircraft_code=\"%s\"", code);
             ResultSet resultSet = statement.executeQuery(sql);
@@ -26,7 +25,7 @@ public class AircraftDao {
     }
 
     public boolean insertAircraft(Aircraft aircraft) {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement("INSERT INTO aircrafts VALUES (?, ?, ?)")) {
             ps.setString(1, aircraft.getCode());
             ps.setString(2, aircraft.getModel().toJSONString());
@@ -40,7 +39,7 @@ public class AircraftDao {
     }
 
     public Set<Aircraft> getAircrafts() throws Exception {
-        try (Connection connection = DbConnectionFactory.getConnection();
+        try (Connection connection = DBConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM aircrafts");
             Set<Aircraft> aircrafts = new HashSet<>();

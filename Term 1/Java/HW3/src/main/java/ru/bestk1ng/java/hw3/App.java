@@ -2,6 +2,7 @@ package ru.bestk1ng.java.hw3;
 
 import ru.bestk1ng.java.hw3.db.DBDaoFacade;
 import ru.bestk1ng.java.hw3.db.DBDownloader;
+import ru.bestk1ng.java.hw3.db.DBWorker;
 
 public final class App {
     private App() {}
@@ -9,6 +10,7 @@ public final class App {
     public static void main(String[] args) {
         System.out.println("Start");
 
+        workWithDB();
 
 //        try {
 //            Set<Airport> airports = daoFacade.airport.getAirports();
@@ -22,9 +24,16 @@ public final class App {
         System.out.println("End");
     }
 
-    private void downloadDB() {
+    private static void downloadDB() {
         DBDaoFacade daoFacade = new DBDaoFacade();
         DBDownloader downloader = new DBDownloader(daoFacade, true);
         downloader.download();
+    }
+
+    private static void workWithDB() {
+        DBDaoFacade daoFacade = new DBDaoFacade();
+        DBWorker worker = new DBWorker(daoFacade);
+        DBWorker.Report1[] report1 = worker.getReport1();
+        System.out.println("");
     }
 }

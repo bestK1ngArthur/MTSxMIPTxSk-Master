@@ -3,7 +3,6 @@ package ru.bestk1ng.java.hw3.db;
 import ru.bestk1ng.java.hw3.models.Airport;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DBWorker {
     private DBDaoFacade daoFacade;
@@ -50,8 +49,8 @@ public class DBWorker {
     }
 
     public class Report {
-        String[] rowNames;
-        String[][] rows;
+        public String[] rowNames;
+        public String[][] rows;
 
         Report(String[] rowNames, String[][] rows) {
             this.rowNames = rowNames;

@@ -209,3 +209,6 @@ fabric.properties
 
 ### AndroidStudio Patch ###
 !/gradle/wrapper/gradle-wrapper.jar
+
+# Reports
+/Term 1/Java/HW3/reports/

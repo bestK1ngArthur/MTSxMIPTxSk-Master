@@ -9,19 +9,8 @@ public final class App {
 
     public static void main(String[] args) {
         System.out.println("Start");
-
-        workWithDB();
-
-//        try {
-//            Set<Airport> airports = daoFacade.airport.getAirports();
-//            for (Airport airport:airports) {
-//                System.out.println(airport.getName().get("en"));
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        System.out.println("End");
+        executeTasks();
+        System.out.println("Finish");
     }
 
     private static void downloadDB() {
@@ -30,10 +19,13 @@ public final class App {
         downloader.download();
     }
 
-    private static void workWithDB() {
+    private static void executeTasks() {
         DBDaoFacade daoFacade = new DBDaoFacade();
         DBWorker worker = new DBWorker(daoFacade);
-        DBWorker.Report report = worker.getReport1();
-        System.out.println("");
+        TableBuilder tableBuilder = new TableBuilder();
+
+        // Task 1
+        DBWorker.Report report1 = worker.getReport1();
+        tableBuilder.buildTable("report_1", report1);
     }
 }

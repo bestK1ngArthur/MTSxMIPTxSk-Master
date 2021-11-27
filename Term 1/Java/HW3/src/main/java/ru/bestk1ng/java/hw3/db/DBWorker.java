@@ -12,8 +12,8 @@ public class DBWorker {
         this.daoFacade = daoFacade;
     }
 
-    public Report1[] getReport1() {
-        List<Report1> report = new ArrayList<>();
+    public Report getReport1() {
+        List<String[]> report = new ArrayList<>();
 
         try {
             Dictionary<String, List<String>> dict = new Hashtable();
@@ -32,27 +32,30 @@ public class DBWorker {
             while(keys.hasMoreElements()) {
                 String city = keys.nextElement();
                 List<String> airports = dict.get(city);
-                report.add(new Report1(city, airports.toArray(new String[airports.size()])));
-            }
 
-            report = report.stream()
-                    .filter( a -> a.airportCodes.length > 1 )
-                    .collect(Collectors.toList());
+                if (airports.size() <= 1) { continue; }
+
+                String airportsString = String.join(", ", airports.toArray(new String[airports.size()]));
+                report.add(new String[]{ city, airportsString });
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return report.toArray(new Report1[report.size()]);
+        return new Report(
+                new String[]{ "Город", "Список аэропортов" },
+                report.toArray(new String[report.size()][])
+        );
     }
 
-    public class Report1 {
-        String cityName;
-        String[] airportCodes;
+    public class Report {
+        String[] rowNames;
+        String[][] rows;
 
-        Report1(String cityName, String[] airportCodes) {
-            this.cityName = cityName;
-            this.airportCodes = airportCodes;
+        Report(String[] rowNames, String[][] rows) {
+            this.rowNames = rowNames;
+            this.rows = rows;
         }
     }
 }

@@ -33,7 +33,7 @@ public final class App {
     private static void workWithDB() {
         DBDaoFacade daoFacade = new DBDaoFacade();
         DBWorker worker = new DBWorker(daoFacade);
-        DBWorker.Report1[] report1 = worker.getReport1();
+        DBWorker.Report report = worker.getReport1();
         System.out.println("");
     }
 }

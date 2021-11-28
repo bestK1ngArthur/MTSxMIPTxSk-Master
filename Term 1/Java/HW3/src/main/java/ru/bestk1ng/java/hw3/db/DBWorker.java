@@ -211,6 +211,58 @@ public class DBWorker {
         );
     }
 
+    public Chart getChart5(String city, Boolean isReturn) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("EEEE", Locale.forLanguageTag("ru"));
+
+        String[] barNames = new String[] {"понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"};
+        Integer[] values = new Integer[7];
+
+        try (Connection connection = DBConnectionFactory.getConnection();
+             Statement statement = connection.createStatement()) {
+            Dictionary<String, Integer> dict = new Hashtable();
+
+            String sql = String.format("""
+            SELECT a.airport_code, a.city, f.departure_airport, f.arrival_airport, f.scheduled_departure
+            FROM airports a, flights f
+            WHERE a.airport_code=f.%s
+            """, isReturn ? "arrival_airport" : "departure_airport");
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                JSONObject cityJson = (JSONObject) jsonParser.parse(resultSet.getString("city"));
+                String resultCity = (String) cityJson.get("ru");
+
+                if (!city.equalsIgnoreCase(resultCity)) { continue; }
+
+                Date scheduledDeparture = resultSet.getDate("scheduled_departure");
+                String weekday = dateFormatter.format(scheduledDeparture);
+
+                Integer count = dict.get(weekday);
+                if (count == null) {
+                    count = 0;
+                }
+                count++;
+                dict.put(weekday, count);
+            }
+
+            for (int i = 0; i < barNames.length; i++) {
+                values[i] = getValue(barNames[i], dict);
+            }
+
+        } catch (SQLException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new Chart(barNames, values);
+    }
+
+    private Integer getValue(String key, Dictionary<String, Integer> dict) {
+        Integer value = dict.get(key);
+        if (value == null) {
+            value = 0;
+        }
+        return value;
+    }
+
     public class Report {
         public String[] rowNames;
         public String[][] rows;
@@ -218,6 +270,16 @@ public class DBWorker {
         Report(String[] rowNames, String[][] rows) {
             this.rowNames = rowNames;
             this.rows = rows;
+        }
+    }
+
+    public class Chart {
+        public String[] barNames;
+        public Integer[] values;
+
+        Chart(String[] barNames, Integer[] values) {
+            this.barNames = barNames;
+            this.values = values;
         }
     }
 }

@@ -22,7 +22,9 @@ public final class App {
     private static void executeTasks() {
         DBDaoFacade daoFacade = new DBDaoFacade();
         DBWorker worker = new DBWorker(daoFacade);
+
         TableBuilder tableBuilder = new TableBuilder();
+        ChartBuilder chartBuilder = new ChartBuilder();
 
         // Task 1
         DBWorker.Report report1 = worker.getReport1();
@@ -43,5 +45,12 @@ public final class App {
         DBWorker.Report report4 = worker.getReport4();
         tableBuilder.buildTable("report_4", report4);
         System.out.println("Report for Task #4 saved");
+
+        // Task 5
+        DBWorker.Chart chart5_1 = worker.getChart5("Москва", false);
+        chartBuilder.buildChard("chart5_1", "Дни недели", "Количество рейсов", chart5_1);
+        DBWorker.Chart chart5_2 = worker.getChart5("Москва", true);
+        chartBuilder.buildChard("chart5_2", "Дни недели", "Количество рейсов", chart5_2);
+        System.out.println("Charts for Task #5 saved");
     }
 }

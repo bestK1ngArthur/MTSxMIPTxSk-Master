@@ -1,10 +1,18 @@
 package ru.bestk1ng.java.hw3.db;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import ru.bestk1ng.java.hw3.models.Airport;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 public class DBWorker {
+    private JSONParser jsonParser = new JSONParser();
     private DBDaoFacade daoFacade;
 
     public DBWorker(DBDaoFacade daoFacade) {
@@ -44,6 +52,49 @@ public class DBWorker {
 
         return new Report(
                 new String[]{ "Город", "Список аэропортов" },
+                report.toArray(new String[report.size()][])
+        );
+    }
+
+    public Report getReport2() {
+        List<String[]> report = new ArrayList<>();
+
+        try (Connection connection = DBConnectionFactory.getConnection();
+             Statement statement = connection.createStatement()) {
+            Dictionary<String, Integer> dict = new Hashtable();
+
+            String sql = """
+            SELECT a.airport_code, a.city, f.departure_airport, f.status
+            FROM airports a, flights f
+            WHERE a.airport_code=f.departure_airport AND f.status='CANCELLED'
+            """;
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                JSONObject cityJson = (JSONObject) jsonParser.parse(resultSet.getString("city"));
+                String city = (String) cityJson.get("ru");
+
+                Integer count = dict.get(city);
+                if (count == null) {
+                    count = 0;
+                }
+
+                count++;
+                dict.put(city, count);
+            }
+
+            Enumeration<String> keys = dict.keys();
+            while(keys.hasMoreElements()) {
+                String city = keys.nextElement();
+                String count = dict.get(city).toString();
+                report.add(new String[]{ city, count });
+            }
+
+        } catch (SQLException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new Report(
+                new String[]{ "Город", "Количество отменённых рейсов" },
                 report.toArray(new String[report.size()][])
         );
     }

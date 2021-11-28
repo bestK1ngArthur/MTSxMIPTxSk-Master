@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class DBWorker {
     private JSONParser jsonParser = new JSONParser();
@@ -97,6 +99,70 @@ public class DBWorker {
 
         return new Report(
                 new String[]{ "Город", "Количество отменённых рейсов" },
+                report.toArray(new String[report.size()][])
+        );
+    }
+
+    public Report getReport3() {
+        List<String[]> report = new ArrayList<>();
+
+        try (Connection connection = DBConnectionFactory.getConnection();
+             Statement statement = connection.createStatement()) {
+            Dictionary<String, ArrayList<Long>> dict = new Hashtable();
+
+            String sql = """
+            SELECT a.airport_code, a.city, f.departure_airport, f.arrival_airport, f.actual_departure, f.actual_arrival
+            FROM airports a, flights f
+            WHERE a.airport_code=f.departure_airport AND f.actual_departure is not NULL AND f.actual_arrival is not NULL
+            """;
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                JSONObject cityJson = (JSONObject) jsonParser.parse(resultSet.getString("city"));
+                String city = (String) cityJson.get("ru");
+                String arrivalAirport = resultSet.getString("arrival_airport");
+                String key = String.format("%s,%s", city, arrivalAirport);
+
+                Date actualDeparture = resultSet.getDate("actual_departure");
+                Date actualArrival = resultSet.getDate("actual_arrival");
+
+                Long diffInMillies = Math.abs(actualArrival.getTime() - actualDeparture.getTime());
+                Long diffInMinutes = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+                ArrayList<Long> diffs = dict.get(key);
+                if (diffs == null) {
+                    diffs = new ArrayList<>();
+                }
+
+                diffs.add(diffInMinutes);
+                dict.put(key,diffs);
+            }
+
+            Enumeration<String> keys = dict.keys();
+            while(keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                String city = key.split(",")[0];
+                String arrivalAirport = key.split(",")[1];
+
+                ArrayList<Long> diffs = dict.get(key);
+                Long average = 0L;
+                for (Long diff:diffs) {
+                    average += diff;
+                }
+                average = average / diffs.size();
+
+                report.add(new String[]{ city, arrivalAirport, String.format("%d", average) });
+            }
+
+            report = report
+                    .stream().sorted( (l,r) -> { return Long.compare(Long.valueOf(l[2]), Long.valueOf(r[2])); })
+                    .collect(Collectors.toList());
+
+        } catch (SQLException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new Report(
+                new String[]{ "Месяц", "Пункт прибытия", "Средняя продолжительность полёта (мин)" },
                 report.toArray(new String[report.size()][])
         );
     }

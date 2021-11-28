@@ -31,5 +31,9 @@ public final class App {
         // Task 2
         DBWorker.Report report2 = worker.getReport2();
         tableBuilder.buildTable("report_2", report2);
+
+        // Task 4
+        DBWorker.Report report4 = worker.getReport4();
+        tableBuilder.buildTable("report_4", report4);
     }
 }

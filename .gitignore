@@ -210,6 +210,15 @@ fabric.properties
 ### AndroidStudio Patch ###
 !/gradle/wrapper/gradle-wrapper.jar
 
+# Python env
+**/env/
+
+# Jupiter
+**/.ipynb_checkpoints/
+
 # Reports
 /Term 1/Java/HW3/reports/
 /Term 1/Java/HW3/charts/
+
+# Seminars
+/Term 1/Data Analysis/Seminars

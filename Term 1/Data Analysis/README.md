@@ -1,12 +1,12 @@
-# Data Analysis
+# Анализ данных
 
-## How to launch HW
+## Как запускать ДЗ
 
-1. Initialize environment and download requirements.
+1. Проинициализировать виртуальное окружение и скачать зависимости.
 `./Scripts/init_environment.sh`
 
-2. Activate environment.
+2. Активировать виртуальное окружение.
 `source env/bin/activate`
 
-3. Open notebook with HW.
+3. Открыть ноутбук с номером.
 `jupyter notebook ./HW<number>/hw.ipynb`

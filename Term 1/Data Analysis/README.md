@@ -9,4 +9,4 @@
 `source env/bin/activate`
 
 3. Open notebook with HW.
-`jupyter notebook ./HW<number>.ipynb`
+`jupyter notebook ./HW<number>/hw.ipynb`

@@ -74,26 +74,6 @@ local.properties
 
 ## END OF ECLIPSE ##
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## GRADLE ##
 
 .gradle
@@ -115,3 +95,11 @@ gradle-app.setting
 
 .vscode
 .sqlite
+
+# macOS
+*.DS_Store
+
+# Out
+/reports/
+/charts/
+/sqlite

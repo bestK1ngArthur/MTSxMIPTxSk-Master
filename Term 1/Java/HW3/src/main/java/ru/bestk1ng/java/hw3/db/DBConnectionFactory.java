@@ -6,6 +6,7 @@ import ru.bestk1ng.java.hw3.App;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -15,11 +16,14 @@ import java.sql.Statement;
 import java.util.stream.Collectors;
 
 public class DBConnectionFactory {
-    private final static String pathToDb = ".sqlite/airtrans.sqlite";
+    private final static String pathToDb = "./sqlite/airtrans.sqlite";
     private static final HikariConfig config = new HikariConfig();
     private static final DataSource ds;
 
     static {
+        File file = new File(pathToDb);
+        file.getParentFile().mkdir();
+
         config.setJdbcUrl("jdbc:sqlite:" + pathToDb);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");

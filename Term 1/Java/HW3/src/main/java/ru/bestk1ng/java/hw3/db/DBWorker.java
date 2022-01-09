@@ -255,6 +255,66 @@ public class DBWorker {
         return new Chart(barNames, values);
     }
 
+    public void executeTask6(String aircraftModel) {
+        try (Connection connection = DBConnectionFactory.getConnection();
+             Statement statement = connection.createStatement()) {
+            // Get aircraft code
+            String aircraftCode = daoFacade.aircraft.getAircrafts(statement).stream()
+                    .filter( aircraft -> {
+                        String model = (String) aircraft.getModel().get("ru");
+                        return model.equalsIgnoreCase(aircraftModel);
+                    })
+                    .findFirst()
+                    .orElseThrow(() -> new Exception())
+                    .getCode();
+
+            // Find flights for aircraft code
+            String flightsSQL = String.format("""
+            SELECT * FROM flights
+            WHERE aircraft_code='%s'
+            """, aircraftCode);
+            ResultSet flightsRS = statement.executeQuery(flightsSQL);
+            Set<String> flightIDs = new HashSet<>();
+            while (flightsRS.next()) {
+                String flightID = flightsRS.getString("flight_id");
+                flightIDs.add(flightID);
+            }
+
+            // Cancel flights
+            String cancelFlightSQL = String.format("""
+                UPDATE flights
+                SET status='CANCELLED'
+                WHERE aircraft_code='%s'
+                """, aircraftCode, aircraftCode);
+            statement.executeUpdate(cancelFlightSQL);
+
+            // Find ticket numbers for flights
+            Set<String> ticketNumbers = new HashSet<>();
+            for (String flightID : flightIDs) {
+                String flightTicketSQL = String.format("""
+                SELECT * FROM ticket_flights
+                WHERE flight_id='%s'
+                """, flightID);
+                ResultSet flightTicketRS = statement.executeQuery(flightTicketSQL);
+                while (flightTicketRS.next()) {
+                    String flightNumber = flightTicketRS.getString("ticket_no");
+                    ticketNumbers.add(flightNumber);
+                }
+            }
+
+            // Remove tickets
+            for (String ticketNumber : ticketNumbers) {
+                String removeTicketSQL = String.format("""
+                DELETE FROM tickets
+                WHERE ticket_no='%s'
+                """, ticketNumber);
+                statement.executeUpdate(removeTicketSQL);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
     private Integer getValue(String key, Dictionary<String, Integer> dict) {
         Integer value = dict.get(key);
         if (value == null) {

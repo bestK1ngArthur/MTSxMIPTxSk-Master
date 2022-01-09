@@ -1,0 +1,27 @@
+image: ubuntu
+
+before_script:
+  - apt update
+  - apt install maven -y
+
+cache:
+  paths:
+    - .m2/repository/
+
+build:
+  stage: build
+  tags:
+    - docker-atp
+  script:
+    - mvn compile
+
+test:
+  stage: test
+  tags:
+    - docker-atp
+  script:
+    - mvn install
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 hour

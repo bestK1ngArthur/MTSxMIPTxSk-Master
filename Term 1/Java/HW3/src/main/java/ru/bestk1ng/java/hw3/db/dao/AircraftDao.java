@@ -38,20 +38,16 @@ public class AircraftDao {
         return false;
     }
 
-    public Set<Aircraft> getAircrafts(Statement statement) throws Exception {
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM aircrafts");
-        Set<Aircraft> aircrafts = new HashSet<>();
-        while (resultSet.next()) {
-            Aircraft aircraft = extract(resultSet);
-            aircrafts.add(aircraft);
-        }
-        return aircrafts;
-    }
-
     public Set<Aircraft> getAircrafts() throws Exception {
         try (Connection connection = DBConnectionFactory.getConnection();
              Statement stmt = connection.createStatement()) {
-            return getAircrafts(stmt);
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM aircrafts");
+            Set<Aircraft> aircrafts = new HashSet<>();
+            while (resultSet.next()) {
+                Aircraft aircraft = extract(resultSet);
+                aircrafts.add(aircraft);
+            }
+            return aircrafts;
         }
     }
 

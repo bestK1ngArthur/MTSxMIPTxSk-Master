@@ -8,18 +8,19 @@ public final class App {
     private App() {}
 
     public static void main(String[] args) {
-        DBDaoFacade daoFacade = new DBDaoFacade();
-
-        downloadDB(daoFacade);
-        executeTasks(daoFacade);
+        // Download DB if needed
+        //downloadDB();
+        executeTasks();
     }
 
-    private static void downloadDB(DBDaoFacade daoFacade) {
+    private static void downloadDB() {
+        DBDaoFacade daoFacade = new DBDaoFacade();
         DBDownloader downloader = new DBDownloader(daoFacade, true);
         downloader.download();
     }
 
-    private static void executeTasks(DBDaoFacade daoFacade) {
+    private static void executeTasks() {
+        DBDaoFacade daoFacade = new DBDaoFacade();
         DBWorker worker = new DBWorker(daoFacade);
 
         TableBuilder tableBuilder = new TableBuilder();
@@ -51,10 +52,5 @@ public final class App {
         DBWorker.Chart chart5_2 = worker.getChart5("Москва", true);
         chartBuilder.buildChard("chart5_2", "Дни недели", "Количество рейсов", chart5_2);
         System.out.println("Charts for Task #5 saved");
-
-        // Task 6
-        String aircraftModel = "Аэробус A321-200";
-        System.out.println(String.format("Task #6 executed for '%s'", aircraftModel));
-        worker.executeTask6(aircraftModel);
     }
 }
